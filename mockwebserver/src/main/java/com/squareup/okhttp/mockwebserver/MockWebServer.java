@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.google.mockwebserver;
+package com.squareup.okhttp.mockwebserver;
 
-import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_START;
-import static com.google.mockwebserver.SocketPolicy.FAIL_HANDSHAKE;
+import static com.squareup.okhttp.mockwebserver.SocketPolicy.DISCONNECT_AT_START;
+import static com.squareup.okhttp.mockwebserver.SocketPolicy.FAIL_HANDSHAKE;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -372,16 +372,18 @@ public final class MockWebServer {
         socket.close();
     }
 
-    private void dispatchBookkeepingRequest(int sequenceNumber, Socket socket) throws InterruptedException {
+    private void dispatchBookkeepingRequest(int sequenceNumber, Socket socket)
+            throws InterruptedException {
         requestCount.incrementAndGet();
-        dispatcher.dispatch(new RecordedRequest(null, null, null, -1, null, sequenceNumber, socket));
+        dispatcher.dispatch(
+                new RecordedRequest(null, null, null, -1, null, sequenceNumber, socket));
     }
 
     /**
      * @param sequenceNumber the index of this request on this connection.
      */
-    private RecordedRequest readRequest(Socket socket, InputStream in, OutputStream out, int sequenceNumber)
-            throws IOException {
+    private RecordedRequest readRequest(Socket socket, InputStream in, OutputStream out,
+            int sequenceNumber) throws IOException {
         String request;
         try {
             request = readAsciiUntilCrlf(in);
@@ -403,12 +405,12 @@ public final class MockWebServer {
             if (contentLength == -1 && lowercaseHeader.startsWith("content-length:")) {
                 contentLength = Long.parseLong(header.substring(15).trim());
             }
-            if (lowercaseHeader.startsWith("transfer-encoding:") &&
-                    lowercaseHeader.substring(18).trim().equals("chunked")) {
+            if (lowercaseHeader.startsWith("transfer-encoding:")
+                    && lowercaseHeader.substring(18).trim().equals("chunked")) {
                 chunked = true;
             }
-            if (lowercaseHeader.startsWith("expect:") &&
-                    lowercaseHeader.substring(7).trim().equals("100-continue")) {
+            if (lowercaseHeader.startsWith("expect:")
+                    && lowercaseHeader.substring(7).trim().equals("100-continue")) {
                 expectContinue = true;
             }
         }
